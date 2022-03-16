@@ -17,6 +17,8 @@ jobs:
         run: sudo apt-get install -y libudev-dev
       - name: build
         run: cargo build --release
+      - name: archive
+        run: zip vm-agent-linux-amd64.zip -j ./target/release/vm-agent
       - name: Wait for tests to succeed
         uses: lewagon/wait-on-check-action@v1.0.0
         with:
@@ -42,6 +44,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./target/release/vm-agent
-          asset_name: vm-agent
-          asset_content_type: application/x-vm-agent
+          asset_path: vm-agent-linux-amd64.zip 
+          asset_name: vm-agent-linux-amd64.zip
+          asset_content_type: application/zip
