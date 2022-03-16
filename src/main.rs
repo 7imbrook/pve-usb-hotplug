@@ -62,33 +62,4 @@ fn main() {
             warn!("No targets for device {}", event);
         }
     });
-    // I can make this a lot cleaner
-    // for e in events.iter() {
-    //     info!("{:?} {}", e.event_type, e);
-    //     if let Some(target_vms) = config.device_mapping.get(&e.device_str()) {
-    //         info!("Found device owners {:?}", target_vms);
-    //         for target_vm in target_vms {
-    //             if let Ok(monitor) =
-    //                 pve::monitor::QMPMonitor::new(target_vm.to_owned())
-    //             {
-    //                 match e.event_type {
-    //                     libudev::EventType::Add => {
-    //                         monitor.add_device(
-    //                             &e.get_id(),
-    //                             &format!("0x{:04x}", e.vendor),
-    //                             &format!("0x{:04x}", e.product),
-    //                         );
-    //                         info!("Added to {}", target_vm);
-    //                         break; // Only break if adding, Always try to remove.
-    //                     }
-    //                     libudev::EventType::Remove => {
-    //                         monitor.remove_device(&e.get_id())
-    //                     }
-    //                     _ => (), // Ignoring
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
 }
