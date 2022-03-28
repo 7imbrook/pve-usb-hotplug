@@ -1,10 +1,10 @@
 name: Release
 
 on:
-  - push:
-    branches:
-      - main
-      - dev/**
+  push:
+  branches:
+    - main
+    - dev/**
 
 env:
   CARGO_TERM_COLOR: always
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: libudev
         run: sudo apt-get install -y libudev-dev
-       name: Run tests
+      - name: Run tests
         run: cargo test
       - name: build
         run: cargo build --release
