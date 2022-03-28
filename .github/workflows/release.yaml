@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev/**
 
 env:
   CARGO_TERM_COLOR: always
@@ -15,18 +16,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: libudev
         run: sudo apt-get install -y libudev-dev
+      - name: Run tests
+        run: cargo test
       - name: build
         run: cargo build --release
       - name: archive
         run: zip vm-agent-linux-amd64.zip -j ./target/release/vm-agent
-      - name: Wait for tests to succeed
-        uses: lewagon/wait-on-check-action@v1.0.0
-        with:
-          ref: ${{ github.sha }}
-          check-name: test
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 20
-          allowed-conclusions: success
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
