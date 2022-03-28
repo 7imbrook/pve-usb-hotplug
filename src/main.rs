@@ -6,6 +6,8 @@ use env_logger;
 use env_logger::Env;
 use log;
 use log::{info, warn};
+use pve::monitor::QMPMonitor;
+use usb::USBEvent;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -24,49 +26,51 @@ fn splash() {
     info!("└────────────────────────────────┘");
 }
 
+fn build_monitors(target_vms: Vec<i32>) -> Vec<QMPMonitor> {
+    target_vms
+        .iter()
+        .map(|vid| pve::monitor::QMPMonitor::new(*vid))
+        .filter(|m| m.is_ok())
+        .map(|m| m.unwrap())
+        .collect::<Vec<pve::monitor::QMPMonitor>>()
+}
+
+fn find_vids_for(identifier: String) -> Vec<i32> {
+    let config = conf::configure_config();
+    if let Some(vms) = config.device_mapping.get(&identifier) {
+        return vms.to_vec();
+    }
+    return config
+        .default_target
+        .and_then(|t| Some(vec![t]))
+        .or(Some(vec![]))
+        .unwrap()
+        .to_vec();
+}
+
+fn handle_event(event: USBEvent) {
+    let identifier = event.device_str();
+    let target_vms = find_vids_for(identifier);
+    let monitors = build_monitors(target_vms);
+    for m in monitors {
+        match event.event_type {
+            libudev::EventType::Add => {
+                m.add_device(&event.get_id(), &event.vendor, &event.product);
+                break;
+            }
+            libudev::EventType::Remove => m.remove_device(&event.get_id()),
+            _ => (),
+        }
+    }
+}
+
 fn main() {
     configure_logging();
     splash();
     info!("Build version: {}", VERSION);
 
-    // This needs to be reloadable
-    let config = conf::configure_config();
-
     // Spawns a new thread that publishes USBEvents to events
     usb::event::start_listener().iter().for_each(|event| {
-        let identifier = event.device_str();
-        if let Some(vms) = config.device_mapping.get(&identifier) {
-            let mut target_vms: Vec<i32> = vms.to_vec();
-            if let Some(default) = config.default_target {
-                target_vms.push(default);
-            }
-            let monitors = target_vms
-                .iter()
-                .map(|vid| pve::monitor::QMPMonitor::new(*vid))
-                .filter(|m| m.is_ok())
-                .map(|m| m.unwrap())
-                .collect::<Vec<pve::monitor::QMPMonitor>>();
-            if monitors.len() > 1 {
-                warn!("Multiple online targets, asigning to first one");
-            }
-            for m in monitors {
-                match event.event_type {
-                    libudev::EventType::Add => {
-                        m.add_device(
-                            &event.get_id(),
-                            &event.vendor,
-                            &event.product,
-                        );
-                        break;
-                    }
-                    libudev::EventType::Remove => {
-                        m.remove_device(&event.get_id())
-                    }
-                    _ => (),
-                }
-            }
-        } else if event.event_type == libudev::EventType::Add {
-            warn!("No targets for device {}", event);
-        }
+        handle_event(event);
     });
 }
