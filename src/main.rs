@@ -7,6 +7,8 @@ use env_logger::Env;
 use log;
 use log::{info, warn};
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 fn configure_logging() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info"))
         .format_timestamp(None)
@@ -25,6 +27,7 @@ fn splash() {
 fn main() {
     configure_logging();
     splash();
+    info!("Build version: {}", VERSION);
 
     // This needs to be reloadable
     let config = conf::configure_config();
