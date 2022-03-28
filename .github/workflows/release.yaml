@@ -22,7 +22,7 @@ jobs:
       - name: Wait for tests to succeed
         uses: lewagon/wait-on-check-action@v1.0.0
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.sha }}
           check-name: test
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 20
@@ -33,9 +33,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: false
+          tag_name: ${{ github.sha }}
+          release_name: ${{ github.event.head_commit.message }}
+          draft: true
           prerelease: true
       - name: Upload Release Asset
         id: upload-release-asset
