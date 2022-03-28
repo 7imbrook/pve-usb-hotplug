@@ -13,5 +13,6 @@ pub fn configure_config() -> Configuration {
 
 #[derive(Deserialize, Debug)]
 pub struct Configuration {
+    pub default_target: Option<i32>,
     pub device_mapping: HashMap<String, Vec<i32>>,
 }
