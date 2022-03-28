@@ -32,7 +32,11 @@ fn main() {
     // Spawns a new thread that publishes USBEvents to events
     usb::event::start_listener().iter().for_each(|event| {
         let identifier = event.device_str();
-        if let Some(target_vms) = config.device_mapping.get(&identifier) {
+        if let Some(vms) = config.device_mapping.get(&identifier) {
+            let mut target_vms: Vec<i32> = vms.to_vec();
+            if let Some(default) = config.default_target {
+                target_vms.push(default);
+            }
             let monitors = target_vms
                 .iter()
                 .map(|vid| pve::monitor::QMPMonitor::new(*vid))
