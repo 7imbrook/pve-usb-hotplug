@@ -33,8 +33,11 @@ pub enum Argument<'a> {
         id: &'a str,
         driver: &'a str,
         bus: &'a str,
-        vendorid: &'a str,
-        productid: &'a str,
+        vendorid: Option<&'a str>,
+        productid: Option<&'a str>,
+
+        // Used for XHCI device
+        addr: Option<&'a str>,
     },
     DeviceRemove {
         id: &'a str,
@@ -84,6 +87,16 @@ pub mod response {
     pub struct QueryCommand {
         #[serde(rename = "return")]
         pub items: Vec<serde_json::Value>,
+    }
+    #[derive(Debug, Deserialize)]
+    pub struct Bool {
+        #[serde(rename = "return")]
+        pub value: bool,
+    }
+    #[derive(Debug, Deserialize)]
+    pub struct StringVal {
+        #[serde(rename = "return")]
+        pub value: String,
     }
     #[derive(Debug, Deserialize)]
     pub struct Item {
