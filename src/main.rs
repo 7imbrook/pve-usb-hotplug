@@ -5,7 +5,7 @@ mod usb;
 use env_logger;
 use env_logger::Env;
 use log;
-use log::{info, warn};
+use log::info;
 use pve::monitor::QMPMonitor;
 use usb::USBEvent;
 
