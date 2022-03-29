@@ -141,29 +141,30 @@ impl QMPMonitor {
         self.execute_command::<commands::response::QomList>(
             commands::Argument::QomList { path: path },
         )
-        .unwrap()
-        .items
-        .iter()
-        .for_each(|item| {
-            let k: &str = &item.kind;
-            if k.starts_with("child<") || k.starts_with("link<") {
-                println!("{: >25}: {}", item.name, item.kind)
-            } else {
-                match &item.kind[..] {
-                    "bool" => println!(
-                        "{: >25}: {}",
-                        item.name,
-                        self.get_bool(path, &item.name)
-                    ),
-                    "string" => println!(
-                        "{: >25}: {}",
-                        item.name,
-                        self.get_string(path, &item.name)
-                    ),
-                    &_ => println!("{: >25}: {}", item.name, item.kind),
+        .and_then(|r| {
+            r.items.iter().for_each(|item| {
+                let k: &str = &item.kind;
+                if k.starts_with("child<") || k.starts_with("link<") {
+                    println!("{: >25}: {}", item.name, item.kind)
+                } else {
+                    match &item.kind[..] {
+                        "bool" => println!(
+                            "{: >25}: {}",
+                            item.name,
+                            self.get_bool(path, &item.name)
+                        ),
+                        "string" => println!(
+                            "{: >25}: {}",
+                            item.name,
+                            self.get_string(path, &item.name)
+                        ),
+                        &_ => println!("{: >25}: {}", item.name, item.kind),
+                    }
                 }
-            }
-        });
+            });
+            Ok(())
+        })
+        .unwrap_or(());
         None
     }
 
@@ -210,6 +211,7 @@ impl QMPMonitor {
             },
         )
         .unwrap();
+        self.list(&format!("/machine/peripheral/{}", id));
     }
 
     pub fn remove_device(&self, id: &str) {
