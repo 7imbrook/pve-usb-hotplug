@@ -53,6 +53,10 @@ fn handle_event(event: USBEvent) {
     let identifier = event.device_str();
     let target_vms = find_vids_for(identifier);
     let monitors = build_monitors(target_vms);
+    info!(
+        "Targets: {:?}",
+        monitors.iter().map(|m| m.vmid).collect::<Vec<i32>>()
+    );
     for m in monitors {
         match event.event_type {
             libudev::EventType::Add => {
