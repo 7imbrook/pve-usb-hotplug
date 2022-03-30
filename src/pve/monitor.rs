@@ -99,8 +99,13 @@ impl QMPMonitor {
             commands::Argument::Handshake {},
         ))
         .unwrap();
+        self.add_xhci_device();
     }
 
+    /**
+     * While most likely already present on most PVE configured vms you'd want to hotplug
+     * this ensures that the xhci bus, which provides the usb 3.0 support, is active.
+     */
     fn add_xhci_device(&self) {
         info!("Initalizing xhci device");
         if self.get_bool("/machine/peripheral/xhci", "realized") {
@@ -195,7 +200,6 @@ impl QMPMonitor {
     }
 
     pub fn add_device(&self, id: &str, vendor: &i16, product: &i16) {
-        self.add_xhci_device();
         info!(
             "Adding device with id {} at {}:{} to {}",
             id, vendor, product, self.vmid
@@ -211,7 +215,7 @@ impl QMPMonitor {
             },
         )
         .unwrap();
-        self.list(&format!("/machine/peripheral/{}", id));
+        // self.list(&format!("/machine/peripheral/{}", id));
     }
 
     pub fn remove_device(&self, id: &str) {

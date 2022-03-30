@@ -1,9 +1,4 @@
 {
     "default_target": 101,
-    "device_mapping": {
-        "0930:6544": [
-            103,
-            101
-        ]
-    }
+    "device_mapping": {}
 }

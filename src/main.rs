@@ -68,7 +68,6 @@ fn main() {
     configure_logging();
     splash();
     info!("Build version: {}", VERSION);
-
     // Spawns a new thread that publishes USBEvents to events
     usb::event::start_listener().iter().for_each(|event| {
         handle_event(event);
