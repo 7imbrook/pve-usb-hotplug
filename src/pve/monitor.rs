@@ -31,17 +31,21 @@ impl QMPMonitor {
      *     -chardev 'socket,id=qmp,path=/var/run/qemu-server/101.qmp,server=on,wait=off'
      *     -mon 'chardev=qmp,mode=control'
      */
-    pub fn new(id: i32) -> Result<Self, &'static str> {
+    pub fn new(id: i32) -> Option<Self> {
         let socket =
             Path::new("/var/run/qemu-server/").join(format!("{}.qmp", id));
 
-        let stream = UnixStream::connect(&socket).unwrap();
-        let qmp = QMPMonitor {
-            vmid: id,
-            stream: stream,
-        };
-        qmp.init();
-        Ok(qmp)
+        match UnixStream::connect(&socket) {
+            Ok(stream) => {
+                let qmp = QMPMonitor {
+                    vmid: id,
+                    stream: stream,
+                };
+                qmp.init();
+                Some(qmp)
+            }
+            _ => None,
+        }
     }
 
     /**

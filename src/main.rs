@@ -30,7 +30,7 @@ fn build_monitors(target_vms: Vec<i32>) -> Vec<QMPMonitor> {
     target_vms
         .iter()
         .map(|vid| pve::monitor::QMPMonitor::new(*vid))
-        .filter(|m| m.is_ok())
+        .filter(|m| m.is_some())
         .map(|m| m.unwrap())
         .collect::<Vec<pve::monitor::QMPMonitor>>()
 }
