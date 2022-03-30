@@ -18,12 +18,12 @@ fn configure_logging() {
 }
 
 fn splash() {
-    info!("Starting USB Hotplug for proxmox");
-    info!("┌────────────────────────────────┐");
-    info!("│    _   ,--()                   │");
-    info!("│ --'-.------|>     Timbrook     │");
-    info!("│     `--[]                      │");
-    info!("└────────────────────────────────┘");
+    println!("   > Starting USB Hotplug for proxmox");
+    println!("    ┌────────────────────────────────────┐");
+    println!("    │    _   ,--()  HotplugPVE           │");
+    println!("    │ --'-.------|> By: Timbrook         │");
+    println!("    │     `--[]     Version: {: <12}│", VERSION);
+    println!("    └────────────────────────────────────┘");
 }
 
 fn build_monitors(target_vms: Vec<i32>) -> Vec<QMPMonitor> {
@@ -49,6 +49,7 @@ fn find_vids_for(identifier: String) -> Vec<i32> {
 }
 
 fn handle_event(event: USBEvent) {
+    info!("Event: {}", event);
     let identifier = event.device_str();
     let target_vms = find_vids_for(identifier);
     let monitors = build_monitors(target_vms);
@@ -65,9 +66,9 @@ fn handle_event(event: USBEvent) {
 }
 
 fn main() {
-    configure_logging();
     splash();
-    info!("Build version: {}", VERSION);
+    configure_logging();
+    info!("Setup complete");
     // Spawns a new thread that publishes USBEvents to events
     usb::event::start_listener().iter().for_each(|event| {
         handle_event(event);
