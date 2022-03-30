@@ -16,7 +16,7 @@ run-qemu:
 build:
 	cargo build --release
 
-deploy-dev: build 
+deploy-dev: build
 	ssh pve -C systemctl stop hotplug-usb
 	scp ./target/release/vm-agent root@pve:/usr/local/bin/vm-agent
 	ssh pve -C 'systemctl daemon-reload && systemctl start hotplug-usb'

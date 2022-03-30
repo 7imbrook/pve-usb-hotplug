@@ -136,7 +136,7 @@ impl QMPMonitor {
                 id: id,
                 driver: "usb-host",
                 bus: "xhci.0",
-                vendorid: Some(&format!("0x{:04}", vendor)),
+                vendorid: Some(&format!("0x{:04x}", vendor)),
                 productid: Some(&format!("0x{:04x}", product)),
                 addr: None,
             },

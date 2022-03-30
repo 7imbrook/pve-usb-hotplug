@@ -27,6 +27,7 @@ fn monitor_socket(sender: Sender<super::USBEvent>) {
             Some(e) => e,
             None => {
                 // receive_event doesn't block, delay here
+                debug!("Sleeping");
                 thread::sleep(Duration::from_secs(1));
                 continue;
             }
