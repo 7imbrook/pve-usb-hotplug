@@ -1,13 +1,10 @@
-mod conf;
-mod pve;
-mod usb;
-
 use env_logger;
 use env_logger::Env;
 use log;
 use log::info;
-use pve::monitor::QMPMonitor;
-use usb::USBEvent;
+use vm_agent::pve::monitor::QMPMonitor;
+use vm_agent::usb::{self, USBEvent};
+use vm_agent::{conf, pve};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
